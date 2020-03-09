@@ -1,0 +1,22 @@
+server {
+	listen 80;
+	charset utf-8;
+	access_log /var/log/nginx/example.access.log;
+	error_log /var/log/nginx/example.error.log;
+	root /home/web/drupal;
+	index index.php;
+
+	server_name example.com www.example.com;
+
+    include /etc/nginx/mime.types;
+	location / {
+		try_files $uri $uri/ /index.php?$args;
+	}
+    location ~^(.+\.php)(.*)$ {
+		fastcgi_split_path_info ^(.+\.php)(.*)$;
+		fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+		include /etc/nginx/fastcgi_params;
+		fastcgi_param   SCRIPT_FILENAME $request_filename;
+		fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+}
